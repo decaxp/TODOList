@@ -15,6 +15,21 @@ function queryError($sql,$mysqli){
     exit;
 }
 
+
+//begin автоматическое удаление 
+
+$deleteDoneTask="delete from todolist where DATE_FORMAT(todolist.updated,'%H') - DATE_FORMAT(todolist.time,'%H')>=1 and done=1";
+$stmt = $mysqli->query($deleteDoneTask);
+
+/* выполнение подготовленного запроса */
+
+
+
+
+//end
+
+
+
 $sqlGetTasks="select id,text,done,time from todolist where sessionID=? and id>? order by time asc";
 
 

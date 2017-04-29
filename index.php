@@ -42,11 +42,7 @@ $url.=$sessionID;
 
     <div class="container">
       <div class="header">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
+     
         <span class="h3class  text-muted">Dolgov TODO List</span>
         <span class="h3class  text-muted">&nbsp;<a href="<?= $url; ?>">Ссылка для восстановления</a>&nbsp;</span>
       </div>
