@@ -115,7 +115,7 @@ session_start();
                 console.log(responseData);
 				//alert("Изменено");
 				console.log(type);
-				if (type==1){
+				if (type==1){//is delete
 					$('#task-text-id'+inputID).parent().parent().remove();
 				}
             },
