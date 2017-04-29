@@ -1,6 +1,4 @@
 ﻿<?php
-session_start();
-
 
 include_once 'mysql.php';
 include_once 'security.php';
@@ -23,10 +21,10 @@ $sqlGetTasks="select id,text,done,time from todolist where sessionID=? and id>? 
 $host=$_SERVER['HTTP_HOST'];
 $id=test_input($_POST['id']);
 //$id=0;
-$sessionID=session_id();
+$sessionID=test_input($_POST['sid']);
 
 $stmt = $mysqli->prepare($sqlGetTasks);
-$stmt->bind_param('ii', $sessionID,$id);
+$stmt->bind_param('si', $sessionID,$id);
 /* выполнение подготовленного запроса */
 $stmt->execute();
 

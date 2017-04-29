@@ -26,3 +26,6 @@ display: inline-block;
 .task-text{
 	width:98%;
 }
+.done{
+	text-decoration: line-through;
+}

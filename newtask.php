@@ -30,7 +30,7 @@ $newtask=test_input($newtask);
 $newtask=ltrim(rtrim($newtask));
 $sessionID=session_id();
 
-
+echo $sessionID;
 
 
 if ($mysqli->connect_errno) {
@@ -39,7 +39,7 @@ if ($mysqli->connect_errno) {
 //добавляем task
 
 $stmt = $mysqli->prepare($sqlInsertTask);
-$stmt->bind_param('is', $sessionID,$newtask);
+$stmt->bind_param('ss', $sessionID,$newtask);
 /* выполнение подготовленного запроса */
 $stmt->execute();
 

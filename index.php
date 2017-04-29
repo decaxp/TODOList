@@ -1,6 +1,15 @@
 ﻿<?php
 session_start();
+$sessionID=session_id();
 
+$url="http://".$_SERVER["SERVER_NAME"].$_SERVER["PHP_SELF"].'?sid=';
+
+
+if (isset($_GET['sid']) and !empty($_GET['sid'])){
+	session_id($_GET['sid']);
+	$sessionID=$_GET['sid'];
+}
+$url.=$sessionID;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +47,8 @@ session_start();
           <li><a href="#">About</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
-        <h3 class="text-muted">Dolgov TODO List</h3>
+        <span class="h3class  text-muted">Dolgov TODO List</span>
+        <span class="h3class  text-muted">&nbsp;<a href="<?= $url; ?>">Ссылка для восстановления</a>&nbsp;</span>
       </div>
 
       <div class="jumbotron">
@@ -57,7 +67,7 @@ session_start();
       <div id="messages"	  class="row marketing">
         <div class="col-lg-12">
 			<span class="wid45"><b>Задача</b></span>
-			<span class="wid10"><b>Готово</b></span>
+			<span class="wid10"><b>Выполнено</b></span>
 			<span class="wid20"><b>Дата</b></span>
 			<span class="wid20"><b>Действие</b></span>
 		</div>
@@ -92,49 +102,61 @@ session_start();
     });
 	
 	function edittask(type,id,inputID){
+		var alertStr="сохранить";
+		if (type==1){
+			alertStr="удалить";
+		}
+		alertStr="Вы действительно хотите "+alertStr+'?';	
 		//type: 0 for save, 1 for del
-		var text=$('#task-text-id'+inputID).val();
-		var done=0;
-		if ($('#task-done-id'+inputID).is(':checked')){
-			done=1;
-		}
 		
-		var data={'id':id,'text':text,'done':done};
-		var url='';
-		if (type==0){
-			url="savetask";
-		}else{
-			url="deltask";
-		}
-		url+='.php';
-		
+		if (window.confirm(alertStr)){
+			var text=$('#task-text-id'+inputID).val();
+			var done=0;
+			if ($('#task-done-id'+inputID).is(':checked')){
+				done=1;
+			}
+			
+			var data={'id':id,'text':text,'done':done};
+			var url='';
+			if (type==0){
+				url="savetask";
+			}else{
+				url="deltask";
+			}
+			url+='.php';
+			
+						
+			
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: data,            
+				success: function(responseData, textStatus, jqXHR) {
+					if (type==0){
+						$('#task-text-id'+inputID).addClass('done');
+					}
+					console.log(responseData);
+					//alert("Изменено");
+					console.log('type='+type.toString());
+					if (type==1){
+						$('#task-text-id'+inputID).parent().parent().remove();
+					}
 					
-		
-		$.ajax({
-            url: url,
-            type: 'POST',
-            data: data,            
-            success: function(responseData, textStatus, jqXHR) {
-                console.log(responseData);
-				//alert("Изменено");
-				console.log('type='+type.toString());
-				if (type==1){
-					$('#task-text-id'+inputID).parent().parent().remove();
-				}
-				
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            },
-           
-        });
-        return false;
+					
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.log(errorThrown);
+				},
+			   
+			});
+			return false;
+		}
 	}
 
 	
 	function getTasks(){
 		var id=$('#curID').val();
-		var data={'id':id};
+		var data={'id':id,'sid':'<?= $sessionID; ?>'};
 		$.ajax({
             url: 'gettasks.php',
             type: 'POST',
@@ -146,8 +168,13 @@ session_start();
 				var checked='';
 				var i=0;
 				for(var key in obj){
+					var isDone="";
+					if (obj[key][1]==1){
+						isDone="done";
+					}
+					
 					str+='<div class=" task col-lg-12">';
-						str+='<span class="wid45"><textarea id="task-text-id'+i+'" class="task-text">'+obj[key][0]+'</textarea></span>';
+						str+='<span class="wid45"><textarea id="task-text-id'+i+'" class="task-text '+isDone+'">'+obj[key][0]+'</textarea></span>';
 						if (obj[key][1]==1) checked="checked";
 						else checked="";
 						
