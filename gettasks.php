@@ -35,8 +35,24 @@ $sqlGetTasks="select id,text,done,time from todolist where sessionID=? and id>? 
 
 $host=$_SERVER['HTTP_HOST'];
 $id=test_input($_POST['id']);
-//$id=0;
 $sessionID=test_input($_POST['sid']);
+
+
+$selectCountTask="select count(id) as count from todolist where sessionID=? and id>?";
+
+$stmt = $mysqli->prepare($selectCountTask);
+$stmt->bind_param('si', $sessionID,$id);
+/* выполнение подготовленного запроса */
+$stmt->execute();
+$stmt->bind_result($count);
+$stmt->fetch();
+$stmt->close();
+if ($count==0){
+	echo 0;
+	exit();
+}
+
+
 
 $stmt = $mysqli->prepare($sqlGetTasks);
 $stmt->bind_param('si', $sessionID,$id);

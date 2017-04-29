@@ -60,8 +60,8 @@ $url.=$sessionID;
 		</form>
       </div>
 
-      <div id="messages"	  class="row marketing">
-        <div class="col-lg-12">
+      <div id="messages"	  class=" row marketing">
+        <div id="task-header" class="col-lg-12">
 			<span class="wid45"><b>Задача</b></span>
 			<span class="wid10"><b>Выполнено</b></span>
 			<span class="wid20"><b>Дата</b></span>
@@ -142,6 +142,12 @@ $url.=$sessionID;
 					console.log('type='+type.toString());
 					if (type==1){
 						$('#task-text-id'+inputID).parent().parent().remove();
+						if (('.task').length==0){
+							
+							
+							var str='<div class=" task col-lg-12">Ничего не найдено!</div>';
+							$('#messages').append(str);		
+						}
 					}
 					
 					
@@ -164,41 +170,53 @@ $url.=$sessionID;
             type: 'POST',
             data: data,            
             success: function(responseData, textStatus, jqXHR) {
-                console.log(responseData);
-				var obj=JSON.parse(responseData);
-				var str="";
-				var checked='';
-				var i=0;
-				for(var key in obj){
-					var isDone="";
-					if (obj[key][1]==1){
-						isDone="done";
-					}
-					
-					str+='<div class=" task col-lg-12">';
-						str+='<span class="wid45"><textarea id="task-text-id'+i+'" class="task-text '+isDone+'">'+obj[key][0]+'</textarea></span>';
-						if (obj[key][1]==1) checked="checked";
-						else checked="";
+				console.log(responseData);
+				if (responseData==0){
+					var str="";
+					str+='<div class=" task col-lg-12">Ничего не найдено!</div>';
+					$('#messages').append(str);		
 						
-						str+='<span class="wid10"><input id="task-done-id'+i+'" class="task-done" type="checkbox" '+checked+'></span>';
-						//str+='<span class="wid10">'+obj[key][1]+'</span>';
-						str+='<span class="wid20">'+obj[key][2]+'</span>';
-						str+='<span class="wid10">';
-							str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask" onClick="edittask(0,'+obj[key][3]+','+i.toString()+')" >';
-						str+='</span>';
-						str+='<span class="wid10">';
-							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask" onClick="edittask(1,'+obj[key][3]+','+i.toString()+')" >';
-						str+='</span>';
-					str+='</div>';
+				}else{
 					
-					
-					
-					//class="saveTask" onClick="saveTask('+obj[key][3]+') 
-					
-					
-					i++;
+				
+				
+				
+					console.log(responseData);
+					var obj=JSON.parse(responseData);
+					var str="";
+					var checked='';
+					var i=0;
+					for(var key in obj){
+						var isDone="";
+						if (obj[key][1]==1){
+							isDone="done";
+						}
+						
+						str+='<div class=" task task2 col-lg-12">';
+							str+='<span class="wid45"><textarea id="task-text-id'+i+'" class="task-text '+isDone+'">'+obj[key][0]+'</textarea></span>';
+							if (obj[key][1]==1) checked="checked";
+							else checked="";
+							
+							str+='<span class="wid10"><input id="task-done-id'+i+'" class="task-done" type="checkbox" '+checked+'></span>';
+							//str+='<span class="wid10">'+obj[key][1]+'</span>';
+							str+='<span class="wid20">'+obj[key][2]+'</span>';
+							str+='<span class="wid10">';
+								str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask" onClick="edittask(0,'+obj[key][3]+','+i.toString()+')" >';
+							str+='</span>';
+							str+='<span class="wid10">';
+								str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask" onClick="edittask(1,'+obj[key][3]+','+i.toString()+')" >';
+							str+='</span>';
+						str+='</div>';
+						
+						
+						
+						//class="saveTask" onClick="saveTask('+obj[key][3]+') 
+						
+						
+						i++;
+					}
+					$('#messages').append(str);
 				}
-				$('#messages').append(str);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
