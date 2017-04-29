@@ -80,6 +80,7 @@ session_start();
             success: function(responseData, textStatus, jqXHR) {
 				console.log(responseData);
                 $('.task').remove();
+				$('#newtask').val('');
 				getTasks();
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -107,6 +108,8 @@ session_start();
 		}
 		url+='.php';
 		
+					
+		
 		$.ajax({
             url: url,
             type: 'POST',
@@ -114,10 +117,11 @@ session_start();
             success: function(responseData, textStatus, jqXHR) {
                 console.log(responseData);
 				//alert("Изменено");
-				console.log(type);
-				if (type==1){//is delete
+				console.log('type='+type.toString());
+				if (type==1){
 					$('#task-text-id'+inputID).parent().parent().remove();
 				}
+				
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
@@ -154,7 +158,7 @@ session_start();
 							str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask" onClick="edittask(0,'+obj[key][3]+','+i.toString()+')" >';
 						str+='</span>';
 						str+='<span class="wid10">';
-							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask" onClick="edittask(1,'+obj[key][3]+')" >';
+							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask" onClick="edittask(1,'+obj[key][3]+','+i.toString()+')" >';
 						str+='</span>';
 					str+='</div>';
 					
