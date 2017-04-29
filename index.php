@@ -90,6 +90,44 @@ session_start();
         return false;
     });
 	
+	function edittask(type,id,inputID){
+		//type: 0 for save, 1 for del
+		var text=$('#task-text-id'+inputID).val();
+		var done=0;
+		if ($('#task-done-id'+inputID).is(':checked')){
+			done=1;
+		}
+		
+		var data={'id':id,'text':text,'done':done};
+		var url='';
+		if (type==0){
+			url="savetask";
+		}else{
+			url="deltask";
+		}
+		url+='.php';
+		
+		$.ajax({
+            url: url,
+            type: 'POST',
+            data: data,            
+            success: function(responseData, textStatus, jqXHR) {
+                console.log(responseData);
+				//alert("Изменено");
+				console.log(type);
+				if (type==1){
+					$('#task-text-id'+inputID).parent().parent().remove();
+				}
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            },
+           
+        });
+        return false;
+	}
+
+	
 	function getTasks(){
 		var id=$('#curID').val();
 		var data={'id':id};
@@ -102,20 +140,21 @@ session_start();
 				var obj=JSON.parse(responseData);
 				var str="";
 				var checked='';
+				var i=0;
 				for(var key in obj){
 					str+='<div class=" task col-lg-12">';
-						str+='<span class="wid45"><textarea class="task-text">'+obj[key][0]+'</textarea></span>';
+						str+='<span class="wid45"><textarea id="task-text-id'+i+'" class="task-text">'+obj[key][0]+'</textarea></span>';
 						if (obj[key][1]==1) checked="checked";
 						else checked="";
 						
-						str+='<span class="wid10"><input class="task-done" type="checkbox" '+checked+'></span>';
+						str+='<span class="wid10"><input id="task-done-id'+i+'" class="task-done" type="checkbox" '+checked+'></span>';
 						//str+='<span class="wid10">'+obj[key][1]+'</span>';
 						str+='<span class="wid20">'+obj[key][2]+'</span>';
 						str+='<span class="wid10">';
-							str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask onClick="editTask(0,'+obj[key][3]+') >';
+							str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask" onClick="edittask(0,'+obj[key][3]+','+i.toString()+')" >';
 						str+='</span>';
 						str+='<span class="wid10">';
-							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask onClick="editTask(1,'+obj[key][3]+') >';
+							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask" onClick="edittask(1,'+obj[key][3]+')" >';
 						str+='</span>';
 					str+='</div>';
 					
@@ -124,7 +163,7 @@ session_start();
 					//class="saveTask" onClick="saveTask('+obj[key][3]+') 
 					
 					
-					
+					i++;
 				}
 				$('#messages').append(str);
             },
@@ -136,60 +175,7 @@ session_start();
         return false;
     }
 	
-	function editTask(type,id){
-		//0 for save, 1 for id
-
-		var data={'id':id};
-		var url='';
-		if (type==0){
-			url="savetask";
-		}else{
-			url="deltask";
-		}
-		url+='.php';
-		
-		$.ajax({
-            url: 'savetask.php',
-            type: 'POST',
-            data: data,            
-            success: function(responseData, textStatus, jqXHR) {
-                console.log(responseData);
-				var obj=JSON.parse(responseData);
-				var str="";
-				var checked='';
-				for(var key in obj){
-					str+='<div class=" task col-lg-12">';
-						str+='<span class="wid45"><textarea class="task-text">'+obj[key][0]+'</textarea></span>';
-						if (obj[key][1]==1) checked="checked";
-						else checked="";
-						
-						str+='<span class="wid10"><input class="task-done" type="checkbox" '+checked+'></span>';
-						//str+='<span class="wid10">'+obj[key][1]+'</span>';
-						str+='<span class="wid20">'+obj[key][2]+'</span>';
-						str+='<span class="wid10">';
-							str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask onClick="editTask(0,'+obj[key][3]+') >';
-						str+='</span>';
-						str+='<span class="wid10">';
-							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask onClick="editTask(1,'+obj[key][3]+') >';
-						str+='</span>';
-					str+='</div>';
-					
-					
-					
-					//class="saveTask" onClick="saveTask('+obj[key][3]+') 
-					
-					
-					
-				}
-				$('#messages').append(str);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            },
-           
-        });
-        return false;
-	}
+	
 	
 	window.onload=getTasks();
 </script>

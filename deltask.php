@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 
 
@@ -17,21 +17,16 @@ function queryError($sql,$mysqli){
     exit;
 }
 
-$sqlUpdateTasks="update todolist set text=?, done=? where id=?";
+$sqlDeleteTask="delete from todolist where id=?";
 
 $host=$_SERVER['HTTP_HOST'];
 $id=test_input($_POST['id']);
 
-$text=test_input($_POST['text']);
-$done=test_input($_POST['done']);
-
 $sessionID=session_id();
 
 
-//echo $id,' ',$text,' ',$done;exit();
-
-$stmt = $mysqli->prepare($sqlUpdateTasks);
-$stmt->bind_param('sii',$text,$done,$id);
+$stmt = $mysqli->prepare($sqlDeleteTask);
+$stmt->bind_param('i',$id);
 /* выполнение подготовленного запроса */
 $stmt->execute();
 
