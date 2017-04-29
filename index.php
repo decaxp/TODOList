@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 ?>
@@ -10,15 +10,13 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
 
     <title>Dolgov</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="jumbotron-narrow.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -45,10 +43,10 @@ session_start();
 
       <div class="jumbotron">
         <h1>Добавить новое дело</h1>
-		<form name="newtaskform" id="newtaskform" action="addtask.php" method="POST" >
+		<form name="newtaskform" id="newtaskform" action="newtask.php" method="POST" >
 			<p class="lead">
 				<input type="hidden" name="curID" id="curID" value="0" >
-				<textarea id="newtask" name="newtask">
+				<textarea class="wid100" id="newtask" name="newtask">
 				
 				</textarea>
 			</p>
@@ -56,32 +54,13 @@ session_start();
 		</form>
       </div>
 
-      <div class="row marketing">
-        <div class="col-lg-6">
-          <h4>Subheading</h4>
-          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-          <h4>Subheading</h4>
-          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-          <h4>Subheading</h4>
-          <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-        </div>
-
-        <div class="col-lg-6">
-          <h4>Subheading</h4>
-          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-          <h4>Subheading</h4>
-          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-          <h4>Subheading</h4>
-          <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-        </div>
-      </div>
-
-      <div class="footer">
-        <p>&copy; Company 2014</p>
+      <div id="messages"	  class="row marketing">
+        <div class="col-lg-12">
+			<span class="wid45"><b>Задача</b></span>
+			<span class="wid10"><b>Готово</b></span>
+			<span class="wid20"><b>Дата</b></span>
+			<span class="wid20"><b>Действие</b></span>
+		</div>
       </div>
 
     </div> <!-- /container -->
@@ -90,47 +69,129 @@ session_start();
 	<script>
 
 	$("#newTaskButton").click(function(){
-        var formData = new FormData($('#newtaskform')[0]);
-        var url = "addtask.php"; // the script where you handle the form input.
+		var newtask=$('#newtask').val();
+        var data={'newtask':newtask};
+        var url = "newtask.php"; // the script where you handle the form input.
         $.ajax({
             url: url,
             type: 'POST',
-            data: formData,
+            data: data,
             
             success: function(responseData, textStatus, jqXHR) {
 				console.log(responseData);
-                if (responseData==1){
-					alert("Задание добавлено!");
-				}
+                $('.task').remove();
+				getTasks();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
             },
-            cache: false,
-            contentType: false,
-            processData: false
+            
         });
         return false;
     });
 	
 	function getTasks(){
-		
+		var id=$('#curID').val();
+		var data={'id':id};
 		$.ajax({
             url: 'gettasks.php',
             type: 'POST',
-            data: formData,            
+            data: data,            
             success: function(responseData, textStatus, jqXHR) {
                 console.log(responseData);
+				var obj=JSON.parse(responseData);
+				var str="";
+				var checked='';
+				for(var key in obj){
+					str+='<div class=" task col-lg-12">';
+						str+='<span class="wid45"><textarea class="task-text">'+obj[key][0]+'</textarea></span>';
+						if (obj[key][1]==1) checked="checked";
+						else checked="";
+						
+						str+='<span class="wid10"><input class="task-done" type="checkbox" '+checked+'></span>';
+						//str+='<span class="wid10">'+obj[key][1]+'</span>';
+						str+='<span class="wid20">'+obj[key][2]+'</span>';
+						str+='<span class="wid10">';
+							str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask onClick="editTask(0,'+obj[key][3]+') >';
+						str+='</span>';
+						str+='<span class="wid10">';
+							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask onClick="editTask(1,'+obj[key][3]+') >';
+						str+='</span>';
+					str+='</div>';
+					
+					
+					
+					//class="saveTask" onClick="saveTask('+obj[key][3]+') 
+					
+					
+					
+				}
+				$('#messages').append(str);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
             },
-            cache: false,
-            contentType: false,
-            processData: false
+           
         });
         return false;
     }
+	
+	function editTask(type,id){
+		//0 for save, 1 for id
+
+		var data={'id':id};
+		var url='';
+		if (type==0){
+			url="savetask";
+		}else{
+			url="deltask";
+		}
+		url+='.php';
+		
+		$.ajax({
+            url: 'savetask.php',
+            type: 'POST',
+            data: data,            
+            success: function(responseData, textStatus, jqXHR) {
+                console.log(responseData);
+				var obj=JSON.parse(responseData);
+				var str="";
+				var checked='';
+				for(var key in obj){
+					str+='<div class=" task col-lg-12">';
+						str+='<span class="wid45"><textarea class="task-text">'+obj[key][0]+'</textarea></span>';
+						if (obj[key][1]==1) checked="checked";
+						else checked="";
+						
+						str+='<span class="wid10"><input class="task-done" type="checkbox" '+checked+'></span>';
+						//str+='<span class="wid10">'+obj[key][1]+'</span>';
+						str+='<span class="wid20">'+obj[key][2]+'</span>';
+						str+='<span class="wid10">';
+							str+='<input type="button" name="button" class="btn btn-primary" value="Сохранить" class="saveTask onClick="editTask(0,'+obj[key][3]+') >';
+						str+='</span>';
+						str+='<span class="wid10">';
+							str+='<input type="button" name="button" class="btn btn-danger" value="Удалить" class="saveTask onClick="editTask(1,'+obj[key][3]+') >';
+						str+='</span>';
+					str+='</div>';
+					
+					
+					
+					//class="saveTask" onClick="saveTask('+obj[key][3]+') 
+					
+					
+					
+				}
+				$('#messages').append(str);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            },
+           
+        });
+        return false;
+	}
+	
+	window.onload=getTasks();
 </script>
     <!-- Bootstrap core JavaScript
     ================================================== -->

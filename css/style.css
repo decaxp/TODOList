@@ -1,0 +1,28 @@
+.wid100{
+width:100%;
+display: inline-block;
+}
+
+.wid45{
+width:45%;
+display: inline-block;
+}
+
+.wid20{
+width:20%;
+display: inline-block;
+}
+
+
+.wid10{
+width:10%;
+display: inline-block;
+}
+.task{
+	margin-bottom:10px;
+
+}
+
+.task-text{
+	width:98%;
+}
