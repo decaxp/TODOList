@@ -29,3 +29,14 @@ display: inline-block;
 .done{
 	text-decoration: line-through;
 }
+
+.h3class{
+    font-size: 24px;
+    color:#999;
+    margin-top: 10px;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.1;
+}

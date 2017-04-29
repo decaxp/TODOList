@@ -76,6 +76,12 @@ $url.=$sessionID;
 
 	$("#newTaskButton").click(function(){
 		var newtask=$('#newtask').val();
+		newtask=newtask.replace(/^\s*(.*)\s*$/, '$1');// удалм\им пробелы
+		
+		if (newtask==""  || newtask==undefined){
+			alert("Нельзя передовать пустое поле!");
+			return;
+		}
         var data={'newtask':newtask};
         var url = "newtask.php"; // the script where you handle the form input.
         $.ajax({
